@@ -46,16 +46,22 @@ clc
 addpath('../_common')
 
 % Load in detection data
-layer_detection = load("layer_detection.mat",'layer_detection');
-layer_detection = layer_detection.layer_detection;
-trimmed_data = load("trimmed_data.mat","Data");
-trimmed_data = trimmed_data.Data;
-% layer_detection = load("ice_detection.mat",'detection');
-% layer_detection = layer_detection.detection;
-% trimmed_data = load("ice_echogram.mat","lee_enhanced");
-% trimmed_data = trimmed_data.lee_enhanced;
+%% For snow
+% layer_detection = load("layer_detection.mat",'layer_detection');
+% layer_detection = layer_detection.layer_detection;
+% trimmed_data = load("trimmed_data.mat","Data");
+% trimmed_data = trimmed_data.Data;
 
+%% For ice
+layer_detection = load("ice_detection.mat",'detection');
+layer_detection = layer_detection.detection;
+trimmed_data = load("../../raw-echogram/20181231_044516.mat","wiener2_modified");
+trimmed_data = trimmed_data.wiener2_modified;
+
+%%
 detection_idx = 1:50:size(layer_detection,2);
+
+% Convert current detection to match with Vo's measurement data
 meas_cell = cell(1,size(detection_idx,2));
 meas_map = zeros(1,size(detection_idx,2));
 k = 1;
@@ -72,7 +78,5 @@ meas.Z = meas_cell;
 meas.meas_map = meas_map;
 
 model= gen_model;
-%truth= gen_truth(model);
-%meas=  gen_meas(model,truth);
 est=   run_filter(model,meas);
 handles= plot_results(model,meas,est,trimmed_data);
