@@ -28,7 +28,7 @@ figure; tracking= gcf; hold on;
 
 %plot x measurement
 %subplot(211); box on; 
-imagesc(1:size(trimmed_data.data,2),trimmed_data.range,trimmed_data.data)
+imagesc(trimmed_data)
 colormap(1-gray)
 hold on
 for k=1:meas.K

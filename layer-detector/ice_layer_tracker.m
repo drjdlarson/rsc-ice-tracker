@@ -2,7 +2,7 @@ close all;
 clear;
 clc;
 
-load ("/home/tuan/Projects/rsc-ice-tracker/raw-echogram/20181231_044516.mat");
+load ("../raw-echogram/20181231_044516.mat");
 
 data  = wiener2_modified;
 
@@ -19,7 +19,7 @@ for k = 1:size(data,2)
     trim_idx = peak_loc < 700;
     time_bed_loc = peak_loc(trim_idx);
 
-    detection{1,k} = time_bed_loc;
+    detection{1,k} = time_bed_loc';
 
     
 end
@@ -31,7 +31,7 @@ colormap (1-gray)
 hold on 
 plot (bed_data(1,:), bed_data(2,:),'r', LineWidth=1.5)
 %xline(ascope_idx,'g')
-for k = 1:1:size(data,2)
+for k = 1:10:size(data,2)
     x = k*ones(size(detection{1,k},1),1);
     y = detection{1,k}(:,:);
     scatter(x, y, 'r.');

@@ -59,7 +59,7 @@ trimmed_data = load("../../raw-echogram/20181231_044516.mat","wiener2_modified")
 trimmed_data = trimmed_data.wiener2_modified;
 
 %%
-detection_idx = 1:50:size(layer_detection,2);
+detection_idx = 1:1:size(layer_detection,2);
 
 % Convert current detection to match with Vo's measurement data
 meas_cell = cell(1,size(detection_idx,2));

@@ -53,11 +53,11 @@ est.M= 0;
 est.J= []; est.H= {};
 
 %filter parameters
-filter.H_upd= 5000;                  %requested number of updated components/hypotheses
-filter.H_max= 5000;                  %cap on number of posterior components/hypotheses
+filter.H_upd= 7000;                  %requested number of updated components/hypotheses
+filter.H_max= 7000;                  %cap on number of posterior components/hypotheses
 filter.hyp_threshold= 1e-15;        %pruning threshold for components/hypotheses
 
-filter.L_max= 100;                  %limit on number of Gaussians in each track - not implemented yet
+filter.L_max= 1000;                  %limit on number of Gaussians in each track - not implemented yet
 filter.elim_threshold= 1e-5;        %pruning threshold for Gaussians in each track - not implemented yet
 filter.merge_threshold= 4;          %merging threshold for Gaussians in each track - not implemented yet
 
