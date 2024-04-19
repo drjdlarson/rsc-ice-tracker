@@ -1,4 +1,7 @@
 # Ignore raw echogram
 raw-echogram
 
+# Ignore matlab work file
+*.asv
+
 

@@ -1,6 +1,6 @@
 function handles= plot_results(model,meas,est,trimmed_data)
+%plot x tracks and measurements in x/y
 
-%[X_track,k_birth,k_death]= extract_tracks(truth.X,truth.track_list,truth.total_tracks);
 
 labelcount= countestlabels();
 colorarray= makecolorarray(labelcount);
@@ -13,128 +13,41 @@ for k=1:meas.K
 end
 [Y_track,l_birth,l_death]= extract_tracks(est.X,est.track_list,est.total_tracks);
 
-%plot ground truths
-% figure; truths= gcf; hold on;
-% for i=1:truth.total_tracks
-%     Zt= gen_observation_fn( model, X_track(:,k_birth(i):1:k_death(i),i),'noiseless');
-%     polar( -Zt(1,:)+pi/2, Zt(2,:),'k-'  );
-%     polar( -Zt(1,1)+pi/2, Zt(2,1), 'ko');
-%     polar( -Zt(1,k_death(i)-k_birth(i)+1)+pi/2, Zt(2,k_death(i)-k_birth(i)+1),'k^');
-% end
-% axis equal; axis([-model.range_c(2,2) model.range_c(2,2) 0 model.range_c(2,2)]); title('Ground Truths');
 
 %plot x tracks and measurements in x/y
-figure; tracking= gcf; hold on;
+figure(); tracking= gcf; hold on;
 
 %plot x measurement
 %subplot(211); box on; 
 imagesc(trimmed_data)
 colormap(1-gray)
 hold on
-for k=1:meas.K
-    if ~isempty(meas.Z{k})
-        hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','o','Markersize',3,'Color','green','MarkerFaceColor','green');
-    end   
-end
-
-%plot x track
-% for i=1:truth.total_tracks
-%     Px= X_track(:,k_birth(i):1:k_death(i),i); Px=Px([1 3],:);
-%     hline1= line(k_birth(i):1:k_death(i),Px(1,:),'LineStyle','-','Marker','none','LineWidth',1,'Color',0*ones(1,3));
+% for k=1:cur_time-1
+%     if ~isempty(meas.Z{k})
+%         hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','.','Markersize',1,'Color','green');
+%     end   
 % end
+%hlined= line(meas.meas_map(cur_time)*ones(size(meas.Z{cur_time},2),1),meas.Z{cur_time}(1,:),'LineStyle','none','Marker','o','Markersize',1,'Color','black');
 
 % %plot x estimate
 for t=1:size(Y_track,3)
-    hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Marker','o','Markersize',8,'Color',colorarray.rgb(t,:),'LineWidth',5);
+    temp = Y_track(1,:,t);
+    num_valid = sum(isnan(temp));
+    if num_valid > 2
+        hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
+        %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color','r','LineWidth',1,'Marker','o','Markersize',1);
+    else
+        continue
+    end
 end
 
-% %plot y measurement
-% subplot(212); box on;
-% 
-% for k=1:meas.K
-%     if ~isempty(meas.Z{k})
-%         yhlined= line(k*ones(size(meas.Z{k},2),1),meas.Z{k}(2,:).*cos(meas.Z{k}(1,:)),'LineStyle','none','Marker','x','Markersize',5,'Color',0.7*ones(1,3));
-%     end
-% end
-
-%plot y track
-% for i=1:truth.total_tracks
-%         Py= X_track(:,k_birth(i):1:k_death(i),i); Py=Py([1 3],:);
-%         yhline1= line(k_birth(i):1:k_death(i),Py(2,:),'LineStyle','-','Marker','none','LineWidth',1,'Color',0*ones(1,3));
-% end
-
-%plot y estimate
-% for t=1:size(Y_track,3)
-%     hline2= line(1:meas.K,Y_track(3,:,t),'LineStyle','none','Marker','.','Markersize',8,'Color',colorarray.rgb(t,:));
-% end
 set(gca, 'YDir','reverse')
 ylabel('Range (m)');
-ylim([322 326]);xlim([meas.meas_map(1) meas.meas_map(end)])
-legend([hline2 hlined],'Estimates ','Detection');
-
-% subplot(212); xlabel('Time'); ylabel('y-coordinate (m)');
-% set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[ model.range_c(1,2) model.range_c(2,2)] );
-%legend([yhline2 yhline1 yhlined],'Estimates          ','True tracks','Measurements');
-
-% %plot error
-% ospa_vals= zeros(truth.K,3);
-% ospa_c= 100;
-% ospa_p= 1;
-% for k=1:meas.K
-%     [ospa_vals(k,1), ospa_vals(k,2), ospa_vals(k,3)]= ospa_dist(get_comps(truth.X{k},[1 3]),get_comps(est.X{k},[1 3]),ospa_c,ospa_p);
-% end
-% 
-% figure; ospa= gcf; hold on;
-% subplot(3,1,1); plot(1:meas.K,ospa_vals(:,1),'k'); grid on; set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[0 ospa_c]); ylabel('OSPA Dist');
-% subplot(3,1,2); plot(1:meas.K,ospa_vals(:,2),'k'); grid on; set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[0 ospa_c]); ylabel('OSPA Loc');
-% subplot(3,1,3); plot(1:meas.K,ospa_vals(:,3),'k'); grid on; set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[0 ospa_c]); ylabel('OSPA Card');
-% xlabel('Time');
-% 
-% %plot error - OSPA^(2)
-% order = 1;
-% cutoff = 100;
-% win_len= 10;
-% 
-% ospa2_cell = cell(1,length(win_len));
-% for i = 1:length(win_len)
-%     ospa2_cell{i} = compute_ospa2(X_track([1 3],:,:),Y_track([1 3],:,:),cutoff,order,win_len);
-% end
-% 
-% figure; ospa2= gcf; hold on;
-% windowlengthlabels = cell(1,length(win_len));
-% subplot(3,1,1);
-% for i = 1:length(win_len)
-%     plot(1:truth.K,ospa2_cell{i}(1,:),'k'); grid on; set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[0 cutoff]); ylabel('OSPA$^{(2)}$ Dist','interpreter','latex');
-%     windowlengthlabels{i} = ['$L_w = ' int2str(win_len(i)) '$'];
-% end
-% legend(windowlengthlabels,'interpreter','latex');
-% 
-% subplot(3,1,2);
-% for i = 1:length(win_len)
-%     plot(1:truth.K,ospa2_cell{i}(2,:),'k'); grid on; set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[0 cutoff]); ylabel('OSPA$^{(2)}$ Loc','interpreter','latex');
-%     windowlengthlabels{i} = ['$L_w = ' int2str(win_len(i)) '$'];
-% end
-% 
-% subplot(3,1,3);
-% for i = 1:length(win_len)
-%     plot(1:truth.K,ospa2_cell{i}(3,:),'k'); grid on; set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[0 cutoff]); ylabel('OSPA$^{(2)}$ Card','interpreter','latex');
-%     windowlengthlabels{i} = ['$L_w = ' int2str(win_len(i)) '$'];
-% end
-% xlabel('Time','interpreter','latex');
-% 
-% 
-% %plot cardinality
-% figure; cardinality= gcf; 
-% subplot(2,1,1); box on; hold on;
-% stairs(1:meas.K,truth.N,'k'); 
-% plot(1:meas.K,est.N,'k.');
-% 
-% grid on;
-% legend(gca,'True','Estimated');
-% set(gca, 'XLim',[1 meas.K]); set(gca, 'YLim',[0 max(truth.N)+1]);
-% xlabel('Time'); ylabel('Cardinality');
-
-%return
+ylim([0 710]);
+xlim([meas.meas_map(1) meas.meas_map(end)])
+yline(700,'r')
+drawnow
+%exportgraphics(tracking,'testAnimated.gif','Append',true);
 handles=[ tracking ];
 
 function ca= makecolorarray(nlabels)
@@ -176,7 +89,11 @@ function [X_track,k_birth,k_death]= extract_tracks(X,track_list,total_tracks)
 
 K= size(X,1); 
 x_dim= size(X{K},1); 
-k=K-1; while x_dim==0, x_dim= size(X{k},1); k= k-1; end
+k=K-1; 
+while x_dim==0 
+    x_dim= size(X{k},1); 
+    k= k-1; 
+end
 X_track= NaN(x_dim,K,total_tracks);
 k_birth= zeros(total_tracks,1);
 k_death= zeros(total_tracks,1);

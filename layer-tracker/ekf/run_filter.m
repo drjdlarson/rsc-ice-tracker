@@ -1,4 +1,4 @@
-function est = run_filter(model,meas)
+function est = run_filter(model,meas,trimmed_data)
 
 % This is the MATLAB code for the (joint prediction and update) implementation of the Generalized Labeled Multi-Bernoulli filter proposed in
 % B.-T. Vo, and B.-N. Vo, "An Efficient Implementation of the Generalized Labeled Multi-Bernoulli Filter," IEEE Trans. Signal Processing, Vol. 65, No. 8, pp. 1975-1987, 2017.
@@ -92,9 +92,14 @@ for k=1:meas.K
     est= extract_estimates_recursive(glmb_update,model,meas,est); %[est.X{k},est.N(k),est.L{k}]= extract_estimates(glmb_update,model);
     display_diaginfo(glmb_update,k,est,filter,H_posterior,H_posterior,H_prune,H_cap);
     
+    % Update and plot
+    est.glmb = glmb_update;
+    figure(1)
+    handle = plot_result_recursive(model,meas,est,trimmed_data,k);
+    
 end
 
-est.glmb = glmb_update;
+
 end
 
 function glmb_nextupdate= jointpredictupdate(glmb_update,model,filter,meas,k)

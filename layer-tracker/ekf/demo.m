@@ -53,20 +53,20 @@ addpath('../_common')
 % trimmed_data = trimmed_data.Data;
 
 %% For ice
-layer_detection = load("ice_detection.mat",'detection');
+layer_detection = load("anms_detection.mat",'detection');
 layer_detection = layer_detection.detection;
 trimmed_data = load("../../raw-echogram/20181231_044516.mat","wiener2_modified");
 trimmed_data = trimmed_data.wiener2_modified;
 
 %%
 detection_idx = 1:1:size(layer_detection,2);
-
+%detection_idx = 1:1:100;
 % Convert current detection to match with Vo's measurement data
 meas_cell = cell(1,size(detection_idx,2));
 meas_map = zeros(1,size(detection_idx,2));
 k = 1;
 for i = detection_idx
-    meas_cell{1,k} = layer_detection{1,i};
+    meas_cell{1,k} = layer_detection{1,i}';
     meas_map(1,k) = i;
     k = k+1;
 end
@@ -78,5 +78,5 @@ meas.Z = meas_cell;
 meas.meas_map = meas_map;
 
 model= gen_model;
-est=   run_filter(model,meas);
+est=   run_filter(model,meas, trimmed_data);
 handles= plot_results(model,meas,est,trimmed_data);
