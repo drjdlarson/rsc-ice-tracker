@@ -6,6 +6,6 @@ function [H,U]= ekf_update_mat(model,mu)
  % H= [ p(2)/mag  0  -p(1)/mag  0  0; ...
  %         p(1)/sqrt_mag  0  p(2)/sqrt_mag 0  0 ];
  % U= eye(2);
- H = 1;
+ H = [1 0];
  U = 1;
  
