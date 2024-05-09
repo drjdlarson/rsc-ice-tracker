@@ -16,5 +16,5 @@ else %modify below here for user specified transition model
     X= zeros(size(Xd));
     %-- add scaled noise
     % Xd = [x; x_dot]
-    X = model.F * Xd + model.B2*V;
+    X = model.F * Xd + model.B2 * V;
 end

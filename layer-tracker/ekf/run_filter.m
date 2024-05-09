@@ -94,6 +94,7 @@ for k=1:meas.K
     
     % Update and plot
     est.glmb = glmb_update;
+
     figure(1)
     handle = plot_result_recursive(model,meas,est,trimmed_data,k);
     

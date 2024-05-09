@@ -24,15 +24,15 @@ model.w_dim= 1;   %dimension of observation noise
 
 % % Snow tracking specific model
 model.T = 1;
-%%
-model.sigma_range = 0.5; % How much we allow layer to traverse
+
+% model.sigma_range = [0.5, 0.2, 0.1]'; % How much we allow layer to traverse
 %%
 
 % Main model
-model.F = [1 pi/180; 0 1];
-model.B = model.sigma_range * eye(model.v_dim);
-model.Q= model.B*model.B';
-model.B2 = [1/2; model.T];
+model.F = [1 1; 0 1];
+model.B = 0.000000001; % model.sigma_range * eye(model.v_dim);
+model.Q = [0.001, 0; 0 0.001]; % model.B*model.B';
+model.B2 = [1/2; 1];
 
 % For Observation
 model.H = [1,0];
@@ -51,10 +51,10 @@ model.B_birth= cell(model.T_birth,1);                                           
 model.P_birth= cell(model.T_birth,1);                                           %cov of GM for each LMB birth term
 
 model.L_birth(1)=1;                                                             %no of Gaussians in birth term 1
-model.r_birth(1)=.25;                                                          %prob of birth
+model.r_birth(1)=.75;                                                          %prob of birth
 model.w_birth{1}(1,1)= 1;                                                       %weight of Gaussians - must be column_vector
 model.m_birth{1}(:,1)= [350; 0];                                 %mean of Gaussians
-model.B_birth{1}(:,:,1)= diag([400, 2]);                  %std of Gaussians
+model.B_birth{1}(:,:,1)= diag([400, pi/180]);                  %std of Gaussians
 model.P_birth{1}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      %cov of Gaussians
 
 % Generate T_birth number of birth terms uniformly space along the range
@@ -74,15 +74,15 @@ model.P_birth{1}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      
 
 % observation model parameters (noisy range only)
 % measurement transformation given by gen_observation_fn, observation matrix is N/A in non-linear case
-model.D= diag([0.05]);                     %std for range noise
+model.D= diag([2]);                     %std for range noise
 model.R= model.D*model.D';              %covariance for observation noise
 
 % detection parameters
-model.P_D= 0.97;   %probability of detection in measurements
+model.P_D= 0.99;   %probability of detection in measurements
 model.Q_D= 1-model.P_D; %probability of missed detection in measurements
 
 % clutter parameters
-model.lambda_c= 8;                             %poisson average rate of uniform clutter (per scan)
+model.lambda_c= 10;                             %poisson average rate of uniform clutter (per scan)
 model.range_c= [0 700];          %uniform clutter on r/theta
 model.pdf_c= 1/prod(model.range_c(:,2)-model.range_c(:,1)); %uniform clutter density
 end
