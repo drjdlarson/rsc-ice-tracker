@@ -31,7 +31,7 @@ model.T = 1;
 % Main model
 model.F = [1 1; 0 1];
 model.B = 0.000000001; % model.sigma_range * eye(model.v_dim);
-model.Q = [0.001, 0; 0 0.001]; % model.B*model.B';
+model.Q = 0.00001; % model.B*model.B';
 model.B2 = [1/2; 1];
 
 % For Observation
