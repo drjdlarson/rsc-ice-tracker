@@ -61,9 +61,9 @@ filter.L_max= 1000;                  %limit on number of Gaussians in each track
 filter.elim_threshold= 1e-5;        %pruning threshold for Gaussians in each track - not implemented yet
 filter.merge_threshold= 4;          %merging threshold for Gaussians in each track - not implemented yet
 
-filter.P_G= 0.9999999;                           %gate size in percentage
+filter.P_G= 0.8;                           %gate size in percentage
 filter.gamma= chi2inv(filter.P_G,model.z_dim);   %inv chi^2 dn gamma value
-filter.gate_flag= 0;                             %gating on or off 1/0
+filter.gate_flag= 1;                             %gating on or off 1/0
 
 filter.run_flag= 'disp';            %'disp' or 'silence' for on the fly output
 
@@ -80,7 +80,7 @@ glmb_update.cdn= 1;             %cardinality distribution of GLMB (vector of car
     
 %recursive filtering
 for k=1:meas.K
-    
+    tic
     %joint prediction and update
     glmb_update= jointpredictupdate(glmb_update,model,filter,meas,k);      H_posterior= length(glmb_update.w);
     
@@ -94,10 +94,12 @@ for k=1:meas.K
     
     % Update and plot
     est.glmb = glmb_update;
-
-    figure(1)
-    handle = plot_result_recursive(model,meas,est,trimmed_data,k);
     
+    if mod(k,1) == 0
+        figure(1)
+        handle = plot_result_recursive(model,meas,est,trimmed_data,k);
+    end
+    toc
 end
 
 

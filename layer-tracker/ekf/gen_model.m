@@ -7,7 +7,7 @@ function model= gen_model
 % model.w_dim= 2;   %dimension of observation noise
 
 % % Snow tracker params
-model.x_dim= 2;   %dimension of state vector
+model.x_dim= 3;   %dimension of state vector
 model.z_dim= 1;   %dimension of observation vector
 model.v_dim= 1;   %dimension of process noise
 model.w_dim= 1;   %dimension of observation noise
@@ -29,20 +29,20 @@ model.T = 1;
 %%
 
 % Main model
-model.F = [1 1; 0 1];
-model.B = 0.000000001; % model.sigma_range * eye(model.v_dim);
-model.Q = 0.00001; % model.B*model.B';
-model.B2 = [1/2; 1];
+model.F = [1 model.T 1/2 * model.T^2; 0 1 model.T; 0 0 1];
+model.B = 0.000000000001; % model.sigma_range * eye(model.v_dim);
+model.Q = 0.0000001; % model.B*model.B';
+model.B2 = [1/6 * model.T^3; 1/2 * model.T^2; model.T];
 
 % For Observation
-model.H = [1,0];
+model.H = [1,0,0];
 
 % survival/death parameters
 model.P_S= 0.999;
 model.Q_S= 1-model.P_S;
 
 % birth parameters (LMB birth model, single component only)
-model.T_birth= 1;         %no. of LMB birth terms
+model.T_birth= 10;         %no. of LMB birth terms
 model.L_birth= zeros(model.T_birth,1);                                          %no of Gaussians in each LMB birth term
 model.r_birth= zeros(model.T_birth,1);                                          %prob of birth for each LMB birth term
 model.w_birth= cell(model.T_birth,1);                                           %weights of GM for each LMB birth term
@@ -50,12 +50,17 @@ model.m_birth= cell(model.T_birth,1);                                           
 model.B_birth= cell(model.T_birth,1);                                           %std of GM for each LMB birth term
 model.P_birth= cell(model.T_birth,1);                                           %cov of GM for each LMB birth term
 
-model.L_birth(1)=1;                                                             %no of Gaussians in birth term 1
-model.r_birth(1)=.75;                                                          %prob of birth
-model.w_birth{1}(1,1)= 1;                                                       %weight of Gaussians - must be column_vector
-model.m_birth{1}(:,1)= [350; 0];                                 %mean of Gaussians
-model.B_birth{1}(:,:,1)= diag([400, pi/180]);                  %std of Gaussians
-model.P_birth{1}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      %cov of Gaussians
+range = [0, 700];
+range_change = (range(2) - range(1)) / model.T_birth;
+
+for k = 1:model.T_birth
+    model.L_birth(k)=1;                                                             %no of Gaussians in birth term 1
+    model.r_birth(k)=.15;                                                          %prob of birth
+    model.w_birth{k}(1,1)= 1;                                                       %weight of Gaussians - must be column_vector
+    model.m_birth{k}(:,1)= [range_change * k; 0; 0];                                 %mean of Gaussians
+    model.B_birth{k}(:,:,1)= diag([range_change / 2, 30 * pi/180, 0.0001]);                  %std of Gaussians
+    model.P_birth{k}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      %cov of Gaussians
+end
 
 % Generate T_birth number of birth terms uniformly space along the range
 % bound
@@ -78,7 +83,7 @@ model.D= diag([2]);                     %std for range noise
 model.R= model.D*model.D';              %covariance for observation noise
 
 % detection parameters
-model.P_D= 0.99;   %probability of detection in measurements
+model.P_D= 0.91;   %probability of detection in measurements
 model.Q_D= 1-model.P_D; %probability of missed detection in measurements
 
 % clutter parameters
