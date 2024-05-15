@@ -1,6 +1,11 @@
 function handles= plot_results(model,meas,est,trimmed_data)
 %plot x tracks and measurements in x/y
 
+if model.subplot == 1
+    subplot(model.max_num,1,model.num)
+end
+
+title(model.name)
 
 labelcount= countestlabels();
 colorarray= makecolorarray(labelcount);
@@ -15,7 +20,8 @@ end
 
 
 %plot x tracks and measurements in x/y
-figure(); tracking= gcf; hold on;
+% figure(); 
+tracking= gcf; hold on;
 
 %plot x measurement
 %subplot(211); box on; 
@@ -33,7 +39,7 @@ hold on
 for t=1:size(Y_track,3)
     temp = Y_track(1,:,t);
     num_valid = sum(~isnan(temp));
-    if num_valid > 150
+    if num_valid > 2
         %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
         hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color','r','LineWidth',1,'Marker','o','Markersize',1);
     else
@@ -43,9 +49,10 @@ end
 
 set(gca, 'YDir','reverse')
 ylabel('Range (m)');
-ylim([0 710]);
+ylim([model.range(1)-5, model.range(2)+5]);
 xlim([meas.meas_map(1) meas.meas_map(end)])
-yline(700,'r')
+yline(model.range(1),'r')
+yline(model.range(2),'r')
 drawnow
 %exportgraphics(tracking,'testAnimated.gif','Append',true);
 handles=[ tracking ];

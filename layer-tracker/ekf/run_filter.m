@@ -61,7 +61,7 @@ filter.L_max= 1000;                  %limit on number of Gaussians in each track
 filter.elim_threshold= 1e-5;        %pruning threshold for Gaussians in each track - not implemented yet
 filter.merge_threshold= 4;          %merging threshold for Gaussians in each track - not implemented yet
 
-filter.P_G= 0.8;                           %gate size in percentage
+filter.P_G= 0.6;                           %gate size in percentage
 filter.gamma= chi2inv(filter.P_G,model.z_dim);   %inv chi^2 dn gamma value
 filter.gate_flag= 1;                             %gating on or off 1/0
 
@@ -95,10 +95,11 @@ for k=1:meas.K
     % Update and plot
     est.glmb = glmb_update;
     
-    if mod(k,1) == 0
-        figure(1)
-        handle = plot_result_recursive(model,meas,est,trimmed_data,k);
-    end
+    % if mod(k,1) == 0
+    %     figure(1)
+    %     handle = plot_result_recursive(model,meas,est,trimmed_data,k);
+    %     drawnow
+    % end
     toc
 end
 
