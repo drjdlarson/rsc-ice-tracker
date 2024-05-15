@@ -7,7 +7,7 @@ function model= gen_model
 % model.w_dim= 2;   %dimension of observation noise
 
 % % Snow tracker params
-model.x_dim= 3;   %dimension of state vector
+model.x_dim= 4;   %dimension of state vector
 model.z_dim= 1;   %dimension of observation vector
 model.v_dim= 1;   %dimension of process noise
 model.w_dim= 1;   %dimension of observation noise
@@ -28,14 +28,27 @@ model.T = 1;
 % model.sigma_range = [0.5, 0.2, 0.1]'; % How much we allow layer to traverse
 %%
 
-% Main model
-model.F = [1 model.T 1/2 * model.T^2; 0 1 model.T; 0 0 1];
-model.B = 0.000000000001; % model.sigma_range * eye(model.v_dim);
-model.Q = 0.0000001; % model.B*model.B';
-model.B2 = [1/6 * model.T^3; 1/2 * model.T^2; model.T];
+% Jerk model
+% model.F = [1 model.T 1/2 * model.T^2; 0 1 model.T; 0 0 1];
+% model.B = 0.000000000001; % model.sigma_range * eye(model.v_dim);
+% model.Q = 0.0000001; % model.B*model.B';
+% model.B2 = [1/6 * model.T^3; 1/2 * model.T^2; model.T];
+
+
+% Second-Order Markov Acceleration Model
+alpha = 0.5;
+omega = 2 * pi / 700;
+model.F = [1, model.T, 1/2 * model.T^2, 1/6 * model.T^3; ...
+    0, 1, model.T, 1/2 * model.T^2; 0, 0, 1, model.T; ...
+    0, 0, -model.T * (alpha^2 + omega^2), -2 * model.T * alpha];
+model.B = 0.0000000001; 
+model.Q = 0.0000001;
+model.B2 = [1/24 * model.T^4 * sqrt(alpha^2 + omega^2); 1/6 * model.T^34 * sqrt(alpha^2 + omega^2); ...
+    1/2 * model.T^2 * sqrt(alpha^2 + omega^2); model.T * sqrt(alpha^2 + omega^2)];
 
 % For Observation
-model.H = [1,0,0];
+model.H = zeros(1,model.x_dim);
+model.H(1) = 1;
 
 % survival/death parameters
 model.P_S= 0.999;
@@ -55,10 +68,18 @@ range_change = (range(2) - range(1)) / model.T_birth;
 
 for k = 1:model.T_birth
     model.L_birth(k)=1;                                                             %no of Gaussians in birth term 1
+
     model.r_birth(k)=.15;                                                          %prob of birth
+
     model.w_birth{k}(1,1)= 1;                                                       %weight of Gaussians - must be column_vector
-    model.m_birth{k}(:,1)= [range_change * k; 0; 0];                                 %mean of Gaussians
-    model.B_birth{k}(:,:,1)= diag([range_change / 2, 30 * pi/180, 0.0001]);                  %std of Gaussians
+
+    model.m_birth{k}(:,1)= zeros(1,model.x_dim);                                 %mean of Gaussians (automatically adjusts based on x dimension)
+    model.m_birth{k}(1,1) = range_change * k;
+
+    model.B_birth{k}(:,:,1)= diag(0.001 * ones(1,model.x_dim));                  %std of Gaussians (automatically adjusts based on x dimension)
+    model.B_birth{k}(1,1,1)= range_change / 2;
+    model.B_birth{k}(2,2,1)= 3 * pi/180;
+
     model.P_birth{k}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      %cov of Gaussians
 end
 
