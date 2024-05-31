@@ -1,8 +1,8 @@
-function handles= plot_results(model,meas,est,trimmed_data)
+function handles= plot_results(model,meas,est,trimmed_data,colorVar)
 %plot x tracks and measurements in x/y
 
 if model.subplot == 1
-    subplot(model.max_num,1,model.num)
+    subplot(1,model.max_num,model.num)
 end
 
 title(model.name)
@@ -28,20 +28,20 @@ tracking= gcf; hold on;
 imagesc(trimmed_data)
 colormap(1-gray)
 hold on
-% for k=1:cur_time-1
-%     if ~isempty(meas.Z{k})
-%         hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','.','Markersize',1,'Color','green');
-%     end   
-% end
+for k=1:size(meas.Z,2)
+    if ~isempty(meas.Z{k})
+        hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','.','Markersize',1.8,'Color','r');
+    end   
+end
 %hlined= line(meas.meas_map(cur_time)*ones(size(meas.Z{cur_time},2),1),meas.Z{cur_time}(1,:),'LineStyle','none','Marker','o','Markersize',1,'Color','black');
 
 % %plot x estimate
 for t=1:size(Y_track,3)
     temp = Y_track(1,:,t);
     num_valid = sum(~isnan(temp));
-    if num_valid > 2
+    if num_valid > 50
         %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
-        hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color','r','LineWidth',1,'Marker','o','Markersize',1);
+        hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorVar,'LineWidth',1,'Marker','o','Markersize',1);
     else
         continue
     end

@@ -61,7 +61,7 @@ filter.L_max= 1000;                  %limit on number of Gaussians in each track
 filter.elim_threshold= 1e-5;        %pruning threshold for Gaussians in each track - not implemented yet
 filter.merge_threshold= 4;          %merging threshold for Gaussians in each track - not implemented yet
 
-filter.P_G= 0.6;                           %gate size in percentage
+filter.P_G= model.P_G;                           %gate size in percentage
 filter.gamma= chi2inv(filter.P_G,model.z_dim);   %inv chi^2 dn gamma value
 filter.gate_flag= 1;                             %gating on or off 1/0
 
@@ -80,9 +80,9 @@ glmb_update.cdn= 1;             %cardinality distribution of GLMB (vector of car
     
 %recursive filtering
 for k=1:meas.K
-    tic
     %joint prediction and update
-    glmb_update= jointpredictupdate(glmb_update,model,filter,meas,k);      H_posterior= length(glmb_update.w);
+    glmb_update= jointpredictupdate(glmb_update,model,filter,meas,k);      
+    H_posterior= length(glmb_update.w);
     
     %pruning and truncation
     glmb_update= prune(glmb_update,filter);                     H_prune= length(glmb_update.w);
@@ -100,7 +100,6 @@ for k=1:meas.K
     %     handle = plot_result_recursive(model,meas,est,trimmed_data,k);
     %     drawnow
     % end
-    toc
 end
 
 
@@ -180,7 +179,7 @@ for tabidx= 1:length(glmb_predict.tt)
             tt_update{stoidx}.l = glmb_predict.tt{tabidx}.l;                                                                                %track label
             tt_update{stoidx}.ah= [glmb_predict.tt{tabidx}.ah; emm];                                                                        %track association history (updated with new measurement)
             allcostm(tabidx,emm)= sum(w_temp);                                                                                              %predictive likelihood
-    end
+    end 
 end
 glmb_nextupdate.tt= tt_update;                                                                                                          %copy track table back to GLMB struct
 %joint cost matrix
