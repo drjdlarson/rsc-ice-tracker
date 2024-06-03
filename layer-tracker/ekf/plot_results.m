@@ -39,7 +39,7 @@ end
 for t=1:size(Y_track,3)
     temp = Y_track(1,:,t);
     num_valid = sum(~isnan(temp));
-    if num_valid > 50
+    if num_valid > 75
         %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
         hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorVar,'LineWidth',1,'Marker','o','Markersize',1);
     else

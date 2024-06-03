@@ -154,10 +154,10 @@ model.R= model.D*model.D';              %covariance for observation noise
 model.P_D= 0.8;   %probability of detection in measurements
 model.Q_D= 1-model.P_D; %probability of missed detection in measurements
 
-model.P_G = 0.7;
+model.P_G = 0.65;
 
 % clutter parameters
-model.lambda_c= 2;                             %poisson average rate of uniform clutter (per scan)
+model.lambda_c= 3;                             %poisson average rate of uniform clutter (per scan)
 model.range_c= [range_limit(1) range_limit(2)];          %uniform clutter on r/theta
 model.pdf_c= 1/prod(model.range_c(:,2)-model.range_c(:,1)); %uniform clutter density
 end
