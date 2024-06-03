@@ -43,6 +43,11 @@ close all
 clear
 clc
 
+if isfile('testAnimated.gif')
+    delete('testAnimated.gif')
+    disp('Deleted the file!')
+end
+
 addpath('../_common')
 
 % Load in detection data
@@ -80,3 +85,5 @@ meas.meas_map = meas_map;
 model= gen_model;
 est=   run_filter(model,meas, trimmed_data);
 handles= plot_results(model,meas,est,trimmed_data);
+
+

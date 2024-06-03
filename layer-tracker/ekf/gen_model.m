@@ -1,5 +1,14 @@
-function model= gen_model
+function model= gen_model(model_name,range_limit, varagin)
 
+model.subplot = 0;
+
+if nargin == 3
+    model.subplot = 1;
+    model.num = varagin(1);
+    model.max_num = varagin(2);
+end
+
+%% Dynamic System Modeling
 % basic parameters
 % model.x_dim= 5;   %dimension of state vector
 % model.z_dim= 2;   %dimension of observation vector
@@ -7,7 +16,6 @@ function model= gen_model
 % model.w_dim= 2;   %dimension of observation noise
 
 % % Snow tracker params
-model.x_dim= 1;   %dimension of state vector
 model.z_dim= 1;   %dimension of observation vector
 model.v_dim= 1;   %dimension of process noise
 model.w_dim= 1;   %dimension of observation noise
@@ -24,20 +32,78 @@ model.w_dim= 1;   %dimension of observation noise
 
 % % Snow tracking specific model
 model.T = 1;
-%%
-model.sigma_range = 0.5; % How much we allow layer to traverse
-%%
+model.name = model_name;
+model.range = range_limit;
 
-model.B = model.sigma_range * eye(model.v_dim);
-model.Q= model.B*model.B';
-model.B2 = [0.5; model.T];
+if all(strcmp(model_name,'Jerk'))
+    % Jerk model
+    model.x_dim= 3;   %dimension of state vector
+    model.F = [1 model.T 1/2 * model.T^2; 0 1 model.T; 0 0 1];
+    model.B = 0.001; % model.sigma_range * eye(model.v_dim);
+    model.Q = model.B*model.B';
+    model.B2 = [1/6 * model.T^3; 1/2 * model.T^2; model.T];
+
+elseif all(strcmp(model_name,'MarkovAcceleration'))
+    % Second-Order Markov Acceleration Model
+    model.x_dim= 4;   %dimension of state vector
+    alpha = 0.5;
+    omega = 2 * pi / 700;
+    model.F = [1, model.T, 1/2 * model.T^2, 1/6 * model.T^3; ...
+        0, 1, model.T, 1/2 * model.T^2; 0, 0, 1, model.T; ...
+        0, 0, -model.T * (alpha^2 + omega^2), -2 * model.T * alpha];
+    model.B = 0.01; 
+    model.Q = model.B*model.B';
+    model.B2 = [1/24 * model.T^4 * sqrt(alpha^2 + omega^2); 1/6 * model.T^3 * sqrt(alpha^2 + omega^2); ...
+        1/2 * model.T^2 * sqrt(alpha^2 + omega^2); model.T * sqrt(alpha^2 + omega^2)];
+
+elseif all(strcmp(model_name,'WienerAcceleration'))
+    model.x_dim= 3;   %dimension of state vector
+    model.F = [1 model.T 1/2 * model.T^2; 0 1 model.T; 0 0 1];
+    model.B = 0.001; % model.sigma_range * eye(model.v_dim);
+    model.Q = model.B*model.B';
+    model.B2 = [1/2 * model.T^2; model.T; 1];
+
+elseif all(strcmp(model_name,'WhiteAcceleration'))
+    model.x_dim= 2;   %dimension of state vector
+    model.F = [1, model.T; 0, 1];
+    model.B = 0.025; % model.sigma_range * eye(model.v_dim);
+    model.Q = model.B*model.B';
+    model.B2 = [1/2 * model.T^2; model.T];
+
+elseif all(strcmp(model_name,'SingerAcceleration'))
+    tau = 0.5;
+    model.x_dim= 3;   %dimension of state vector
+    model.F = [1 model.T tau^2 * (-1 + model.T/tau + exp(-model.T/tau)); ...
+        0 1 tau * (1 - exp(-model.T/tau)); 0 0 exp(-model.T/tau)];
+    model.B = 0.01; % model.sigma_range * eye(model.v_dim);
+    model.Q = model.B*model.B';
+    model.B2 = [1/2 * model.T^2; model.T; 1];
+   
+elseif all(strcmp(model_name,'SingerJerk'))
+    tau = 0.5;
+    model.x_dim= 3;   %dimension of state vector
+    model.F = [1 model.T tau^2 * (-1 + model.T/tau + exp(-model.T/tau)); ...
+        0 1 tau * (1 - exp(-model.T/tau)); 0 0 exp(-model.T/tau)];
+    model.B = 0.01; % model.sigma_range * eye(model.v_dim);
+    model.Q = model.B*model.B';
+    model.B2 = [1/6 * model.T^3; 1/2 * model.T^2; model.T];
+
+else
+    disp("Error! Please choose a valid dynamics model from gen_model.m!")
+end
+
+%% Other terms (should change based on dynamic model chosen)
+
+% For Observation
+model.H = zeros(1,model.x_dim);
+model.H(1) = 1;
 
 % survival/death parameters
 model.P_S= 0.99;
 model.Q_S= 1-model.P_S;
 
 % birth parameters (LMB birth model, single component only)
-model.T_birth= 1;         %no. of LMB birth terms
+model.T_birth= 20;         %no. of LMB birth terms
 model.L_birth= zeros(model.T_birth,1);                                          %no of Gaussians in each LMB birth term
 model.r_birth= zeros(model.T_birth,1);                                          %prob of birth for each LMB birth term
 model.w_birth= cell(model.T_birth,1);                                           %weights of GM for each LMB birth term
@@ -45,12 +111,24 @@ model.m_birth= cell(model.T_birth,1);                                           
 model.B_birth= cell(model.T_birth,1);                                           %std of GM for each LMB birth term
 model.P_birth= cell(model.T_birth,1);                                           %cov of GM for each LMB birth term
 
-model.L_birth(1)=1;                                                             %no of Gaussians in birth term 1
-model.r_birth(1)=0.1;                                                          %prob of birth
-model.w_birth{1}(1,1)= 1;                                                       %weight of Gaussians - must be column_vector
-model.m_birth{1}(:,1)= [350];                                 %mean of Gaussians
-model.B_birth{1}(:,:,1)= diag([400]);                  %std of Gaussians
-model.P_birth{1}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      %cov of Gaussians
+range = [range_limit(1), range_limit(2)];
+range_change = (range(2) - range(1)) / model.T_birth;
+for k = 1:model.T_birth
+    model.L_birth(k)=1;                                                             %no of Gaussians in birth term 1
+
+    model.r_birth(k)=0.25;                                                          %prob of birth
+
+    model.w_birth{k}(1,1)= 1;                                                       %weight of Gaussians - must be column_vector
+
+    model.m_birth{k}(:,1)= zeros(1,model.x_dim);                                 %mean of Gaussians (automatically adjusts based on x dimension)
+    model.m_birth{k}(1,1) = range(1) + range_change * k;
+
+    model.B_birth{k}(:,:,1)= diag(0.001 * ones(1,model.x_dim));                  %std of Gaussians (automatically adjusts based on x dimension)
+    model.B_birth{k}(1,1,1)= range_change * 2;
+    model.B_birth{k}(2,2,1)= 5 * pi/180;
+
+    model.P_birth{k}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      %cov of Gaussians
+end
 
 % Generate T_birth number of birth terms uniformly space along the range
 % bound
@@ -69,16 +147,18 @@ model.P_birth{1}(:,:,1)= model.B_birth{1}(:,:,1)*model.B_birth{1}(:,:,1)';      
 
 % observation model parameters (noisy range only)
 % measurement transformation given by gen_observation_fn, observation matrix is N/A in non-linear case
-model.D= diag([0.1]);                     %std for range noise
+model.D= diag([8.5]);                     %std for range noise
 model.R= model.D*model.D';              %covariance for observation noise
 
 % detection parameters
-model.P_D= .8;   %probability of detection in measurements
+model.P_D= 0.8;   %probability of detection in measurements
 model.Q_D= 1-model.P_D; %probability of missed detection in measurements
 
+model.P_G = 0.65;
+
 % clutter parameters
-model.lambda_c= 10;                             %poisson average rate of uniform clutter (per scan)
-model.range_c= [0 700];          %uniform clutter on r/theta
+model.lambda_c= 3;                             %poisson average rate of uniform clutter (per scan)
+model.range_c= [range_limit(1) range_limit(2)];          %uniform clutter on r/theta
 model.pdf_c= 1/prod(model.range_c(:,2)-model.range_c(:,1)); %uniform clutter density
 end
 

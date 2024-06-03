@@ -2,6 +2,10 @@ function handles= plot_result_recursive(model,meas,est,trimmed_data,cur_time)
 %plot x tracks and measurements in x/y
 figure(1); tracking= gcf; set(tracking,'position',[0,0,1272,777])
 
+if model.subplot == 1
+    subplot(1,model.max_num,model.num)
+end
+
 labelcount= countestlabels();
 colorarray= makecolorarray(labelcount);
 est.total_tracks= labelcount;
@@ -36,8 +40,8 @@ hlined= line(meas.meas_map(cur_time)*ones(size(meas.Z{cur_time},2),1),meas.Z{cur
 % %plot x estimate
 for t=1:size(Y_track,3)
     temp = Y_track(1,:,t);
-    num_valid = sum(isnan(temp));
-    if num_valid > 2
+    num_valid = sum(~isnan(temp));
+    if num_valid > 25
         %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
         hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color','r','LineWidth',1);
     else
@@ -46,13 +50,16 @@ for t=1:size(Y_track,3)
 end
 
 set(gca, 'YDir','reverse')
-ylabel('Range (m)');
-ylim([0 710]);
+ylabel('Range (Index)');
+ylim([model.range(1)-5, model.range(2)+5]);
 xlim([meas.meas_map(1) meas.meas_map(end)])
-yline(700,'r')
+yline(model.range(1),'r')
+yline(model.range(2),'r')
 drawnow
 hold off
-exportgraphics(tracking,'testAnimated.gif','Append',true);
+title(model.name)
+fig_hand = gcf;
+exportgraphics(fig_hand,'testAnimated.gif','Append',true);
 handles=[ tracking ];
 
 function ca= makecolorarray(nlabels)

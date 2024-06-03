@@ -16,5 +16,5 @@ else %modify below here for user specified measurement model
     % P= X([1 3],:);
     % Z(1,:)= atan2(P(1,:),P(2,:));   
     % Z(2,:)= sqrt(sum(P.^2));
-    Z= X + W;
+    Z= model.H * X + W;
 end
