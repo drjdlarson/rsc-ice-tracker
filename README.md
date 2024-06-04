@@ -19,12 +19,12 @@ This repo implements the JGLMB implementation by Vo-Vo to internal ice layer tra
 **Note: Since all dynamic models attempted are linear, the model returned by gen_model.m is used to specify the F, G, and H matrices and further passed into all prediction, observation, and correction functions.** 
 | Model | Description | 
 | ----- | --- |
-| Jerk | 				A random variable on the jerk of the target. Tracks position, velocity, and acceleration. |
-| MarkovAcceleration |		A damped oscillation model that tracks position, velocity, acceleration, and jerk. Uses an oscillatory acceleration autocorrelation function. |
-| WienerAcceleration |		A zero-mean white noise jerk model that tracks position, velocity, and acceleration. |
-| WhiteAcceleration | 		A zero-mean white noise acceleration model that tracks position and velocity only. |
-| SingerAcceleration |		An exponential autocorrelation acceleration model with an exponential decay parameter to tune. Tracks position, velocity, and acceleration. |
-| SingerJerk	| 			Takes the Singer model for acceleration but the jerk has the random variable. Tracks position, velocity, and acceleration. |
+| "Jerk" | 				A random variable on the jerk of the target. Tracks position, velocity, and acceleration. |
+| "MarkovAcceleration" |		A damped oscillation model that tracks position, velocity, acceleration, and jerk. Uses an oscillatory acceleration autocorrelation function. |
+| "WienerAcceleration" |		A zero-mean white noise jerk model that tracks position, velocity, and acceleration. |
+| "WhiteAcceleration" | 		A zero-mean white noise acceleration model that tracks position and velocity only. |
+| "SingerAcceleration" |		An exponential autocorrelation acceleration model with an exponential decay parameter to tune. Tracks position, velocity, and acceleration. |
+| "SingerJerk"	| 			Takes the Singer model for acceleration but the jerk has the random variable. Tracks position, velocity, and acceleration. |
 
 ## The scripts for running the filter: 
 | Script | Description | 
