@@ -11,7 +11,9 @@ This repo implements the JGLMB implementation by Vo-Vo to internal ice layer tra
 | layer-tracker/ekf |			Contains the files that are used for tuning and implementing the JGLMB. |
 
 ## The script used for tuning: 
-- gen_model.m				This script generates varying parameters that affect the performance of the filter. It also dictates the dynamics model. 
+| Script | Description | 
+| ----- | --- |
+| gen_model.m	|			This script generates varying parameters that affect the performance of the filter. It also dictates the dynamics model. |
 
 ## The following dynamics models are what were attempted:
 **Note: Since all dynamic models attempted are linear, the model returned by gen_model.m is used to specify the F, G, and H matrices and further passed into all prediction, observation, and correction functions.** 
