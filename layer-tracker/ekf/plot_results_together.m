@@ -1,4 +1,4 @@
-function handles= plot_results_together(model,meas,est,colorVar)
+function handles= plot_results_together(model,meas,est,trimmed_data,colorVar,track_length_min)
 %plot x tracks and measurements in x/y
 
 labelcount= countestlabels();
@@ -29,7 +29,7 @@ tracking= gcf; hold on;
 for t=1:size(Y_track,3)
     temp = Y_track(1,:,t);
     num_valid = sum(~isnan(temp));
-    if num_valid > 2
+    if num_valid > track_length_min
         %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
         hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorVar,'LineWidth',1,'Marker','o','Markersize',1);
     else
