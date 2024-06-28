@@ -16,8 +16,7 @@ for k = 1:length(file_names)
     sim{k} = load(file_names{k});
 end
 
-trimmed_data = load("../../raw-echogram/20181231_044516.mat","wiener2_modified");
-trimmed_data = trimmed_data.wiener2_modified;
+trimmed_data = load("../../raw-echogram/20181231_044516.mat","wiener2_modified").wiener2_modified;
 
 %% Plot each on different subplots
 
@@ -28,7 +27,6 @@ track_length_min = 700;
 % colormap(1-gray)
 
 for i = 1:length(sim)
-
     model = sim{i}.s.models;
     meas = sim{i}.s.meas;
     est = sim{i}.s.ests;
@@ -39,7 +37,8 @@ for i = 1:length(sim)
         legend_list{k} = model{k}.name;
     end
 
-    figure("Name",'anms val: ' + string(sim{i}.s.anms_val))
+    % figure("Name",'anms val: ' + string(sim{i}.s.anms_val))
+    figure(i)
     % imagesc(trimmed_data)
     % colormap(1-gray)
     

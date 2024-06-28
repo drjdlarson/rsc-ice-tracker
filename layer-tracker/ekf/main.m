@@ -35,14 +35,14 @@ data = all_data.wiener2_modified;
 % data = all_data.detection;
 
 x_lim = 100; % size(data,2)];  % trim x dimension
-
-for anms_surpression_cutoff = 31:3:43
-    
+% 
+% for anms_surpression_cutoff = 31:3:43
+% 
 close all;
 
-% anms_surpression_cutoff = 5;
+anms_surpression_cutoff = 35;
 
-supressed_detections = anms_detection(data,trim_vals,anms_surpression_cutoff);
+supressed_detections = anms_detection(data(:,:),trim_vals,anms_surpression_cutoff);
 
 %% Parfor loop
  % tracking_supressed_detections(detection,trim_val,model_name, trimmed_data, varagin)
@@ -52,7 +52,7 @@ end
 
 %% Plotting
 
-track_length_min = 700;
+track_length_min = 200; % 700;
 
 % close all;
 % 
@@ -99,4 +99,4 @@ structfilename = 'Structs/struct-' + string(datetime('now','Format','MM-dd-yy-HH
 
 save(structfilename,'s');
 
-end
+% end
