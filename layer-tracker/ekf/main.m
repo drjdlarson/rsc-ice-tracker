@@ -4,88 +4,56 @@ clc
 
 tic
 
-%% Loading Data
+%% Initial file management
+
+
 
 if isfile('testAnimated.gif')
     delete('testAnimated.gif')
     disp('Deleted the file!')
-end
+end 
 
 addpath('../_common')
 
+addpath('FastPassTracker\')
+
+addpath('Plotting\')
+
+%% Load and preprocess data 
+
 trimmed_data = load("../../raw-echogram/20181231_044516.mat","wiener2_modified").wiener2_modified;
-
-% Dynamical Systems Test
-
-full_list = {'Jerk','MarkovAcceleration','WienerAcceleration','WhiteAcceleration', ...
-    'SingerAcceleration','SingerJerk'};
-
-list = full_list; % ([2,5,6]);
-list_colors = [rand(1,length(list)); rand(1,length(list)); rand(1,length(list))];
-
-trim_vals = [0 800]; % [50 250]; % [100 250];
+trim_vals = [0 700];
 
 % Note: not using anms data will split data directly from the echogram
 all_data = load ("../../raw-echogram/20181231_044516.mat");
 data = all_data.wiener2_modified;
 
-% Note: using the anms data you must include the trimmed_data as the
-% echogram
-% all_data = load('anms_detection.mat','detection');
-% data = all_data.detection;
-
-x_lim = 100; % size(data,2)];  % trim x dimension
-% 
-% for anms_surpression_cutoff = 31:3:43
-% 
 close all;
 
-anms_surpression_cutoff = 35;
-
+anms_surpression_cutoff = 30;
 supressed_detections = anms_detection(data(:,:),trim_vals,anms_surpression_cutoff);
 
 %% Parfor loop
- % tracking_supressed_detections(detection,trim_val,model_name, trimmed_data, varagin)
-parfor k = 1:length(list)
-    [model{k},est{k},meas{k}] = tracking_supressed_detections(supressed_detections,trim_vals,list{k}, trimmed_data,[k, length(list)]);
-end 
+
+[model,est,meas] = tracking_supressed_detections(supressed_detections,trim_vals,'SingerAcceleration', trimmed_data);
+
+time_run = toc;
+
+fprintf('Tracker took %f seconds to run. \n',time_run)
+fprintf('Tracker took %f minutes to run. \n',time_run/60)
+fprintf('Tracker took %f hours to run. \n',time_run/3600)
 
 %% Plotting
 
-track_length_min = 200; % 700;
+track_length_min = 0.98 * size(data,2); 
 
-% close all;
-% 
-% figure(1)
-% imagesc(trimmed_data)
-% colormap(1-gray)
-% hold on
-% 
-% for k = 1:length(list_colors)
-%     plot(0,0,'Color',list_colors(:,k))
-% end
-% 
-% for k = 1:length(list)
-%     plot_results_together(model{k},meas{k},est{k},trimmed_data,list_colors(:,k),track_length_min);
-% end
-% 
-% legend(list)
+figure;
+output_tracks = plot_results(model,meas,est,trimmed_data,[0;0;0],track_length_min);
 
-% figure(2)
+ylim(trim_vals)
+xlim([0,length(supressed_detections)])
 
-for k = 1:length(list)
-    figure
-    model{k}.subplot = 0;
-    output_tracks{k} = plot_results(model{k},meas{k},est{k},trimmed_data,[0;0;0],track_length_min);
-end
-
-% for k = 1:length(list)
-%     figure(k+2)
-%     model{k}.subplot = 0;
-%     plot_results(model{k},meas{k},est{k},trimmed_data,[0;0;0]);
-% end
-
-toc
+drawnow; 
 
 %% Saving Results
     
@@ -99,4 +67,4 @@ structfilename = 'Structs/struct-' + string(datetime('now','Format','MM-dd-yy-HH
 
 save(structfilename,'s');
 
-% end
+rmpath('FastPassTracker\')
