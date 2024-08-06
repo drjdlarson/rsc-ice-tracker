@@ -1,4 +1,4 @@
-function X= gen_newstate_fn(model,Xd,V)
+function X= gen_newstate_fn(model,Xd,V,k)
 
 if ~isnumeric(V)
     if strcmp(V,'noise')

@@ -1,4 +1,4 @@
-function [model,est,meas] = tracking_supressed_detections(detection,trim_val,model_name, trimmed_data)
+function [model,est,meas] = tracking_supressed_detections(detection,trim_val,model_name, trimmed_data,non_surpressed_detections)
 
 layer_detection = detection;
 
@@ -17,7 +17,7 @@ meas.K = size(meas_cell,2);
 meas.Z = meas_cell;
 meas.meas_map = meas_map;
 
-model= gen_model(model_name,trim_val,meas.Z);
+model= gen_model(model_name,trim_val,non_surpressed_detections);
 
 est=   run_filter(model,meas, trimmed_data);
 

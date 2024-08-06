@@ -1,4 +1,4 @@
-function handles= plot_results_together(model,meas,est,trimmed_data,colorVar,track_length_min)
+function output_tracks = plot_results_together(model,meas,est,track_length_min)
 %plot x tracks and measurements in x/y
 
 labelcount= countestlabels();
@@ -25,24 +25,29 @@ tracking= gcf; hold on;
 % end
 %hlined= line(meas.meas_map(cur_time)*ones(size(meas.Z{cur_time},2),1),meas.Z{cur_time}(1,:),'LineStyle','none','Marker','o','Markersize',1,'Color','black');
 
+k = 1;
+
+output_tracks = cell(1);
+
 % %plot x estimate
 for t=1:size(Y_track,3)
     temp = Y_track(1,:,t);
     num_valid = sum(~isnan(temp));
     if num_valid > track_length_min
         %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
-        hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorVar,'LineWidth',1,'Marker','o','Markersize',1);
+        hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color','r','LineWidth',1,'Marker','o','Markersize',1);
+        output_tracks{k} = [meas.meas_map; Y_track(1,:,t)];
+        k = k + 1;
     else
         continue
     end
 end
-
 set(gca, 'YDir','reverse')
 ylabel('Range (m)');
-ylim([model.range(1)-5, model.range(2)+5]);
-xlim([meas.meas_map(1) meas.meas_map(end)])
-yline(model.range(1),'r')
-yline(model.range(2),'r')
+% ylim([model.range(1)-5, model.range(2)+5]);
+% xlim([meas.meas_map(1) meas.meas_map(end)])
+% yline(model.range(1),'r')
+% yline(model.range(2),'r')
 drawnow
 %exportgraphics(tracking,'testAnimated.gif','Append',true);
 handles=[ tracking ];

@@ -1,4 +1,4 @@
-function X= gen_newstate_fn(model,Xd,V)
+function X= gen_newstate_fn(model,Xd,V,k)
 
 if ~isnumeric(V)
     if strcmp(V,'noise')
@@ -10,9 +10,18 @@ end
 
 if isempty(Xd)
     X= [];
-else %modify below here for user specified transition model
+elseif k ~= 1 %modify below here for user specified transition model
     X= zeros(size(Xd));
-    %-- add scaled noise
-    % Xd = [x; x_dot]
-    X = model.F * Xd + model.B2 * V;
+
+    if size(model.ref,1) == 2
+        d1 = abs(Xd - model.ref(1,k-1));
+        d2 = abs(Xd - model.ref(2,k-1));
+        p1 = model.ref(1,k)/ model.ref(1,k-1);
+        p2 = model.ref(2,k)/ model.ref(2,k-1);
+        X = Xd * ( d2 * p1 + d1 * p2 ) / (d1 + d2);
+    else
+        X = Xd * model.ref(k) / model.ref(k-1);
+    end
+else
+    X = Xd;
 end

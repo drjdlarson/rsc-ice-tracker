@@ -1,4 +1,4 @@
-function [F,G]= ekf_predict_mat(model,mu_old)
+function [F,G]= ekf_predict_mat(model,mu_old,k)
 
 F = model.F;
 

@@ -121,7 +121,7 @@ range_change = (range(2) - range(1)) / model.T_birth;
 for k = 1:model.T_birth
     model.L_birth(k)=1;                                                             %no of Gaussians in birth term 1
 
-    model.r_birth(k)= 10/model.T_birth;                                                          %prob of birth 
+    model.r_birth(k)= 20/model.T_birth;                                                          %prob of birth 
     model.w_birth{k}(1,1)= 1;                                                       %weight of Gaussians - must be column_vector
 
     model.m_birth{k}(:,1)= zeros(1,model.x_dim);                                 %mean of Gaussians (automatically adjusts based on x dimension)
@@ -158,7 +158,7 @@ end
 
 % observation model parameters (noisy range only)
 % measurement transformation given by gen_observation_fn, observation matrix is N/A in non-linear case
-model.D= diag([4]);                     %std for range noise
+model.D= diag([4.5]);                     %std for range noise
 model.R= model.D*model.D';              %covariance for observation noise
 
 % detection parameters

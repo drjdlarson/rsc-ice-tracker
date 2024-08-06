@@ -1,4 +1,4 @@
-function [detection] = anms_detection(data,trim_val,anms_surpression_cutoff)
+function [detection,non_surpressed_detection] = anms_detection(data,trim_val,anms_surpression_cutoff)
 
 bed_data = track_bed(data, 0.5, 70);
 

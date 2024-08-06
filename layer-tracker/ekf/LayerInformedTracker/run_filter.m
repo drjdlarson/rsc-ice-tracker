@@ -1,4 +1,4 @@
-function est = run_filter(model,meas,trimmed_data)
+function est = run_filter(model,meas)
 
 % This is the MATLAB code for the (joint prediction and update) implementation of the Generalized Labeled Multi-Bernoulli filter proposed in
 % B.-T. Vo, and B.-N. Vo, "An Efficient Implementation of the Generalized Labeled Multi-Bernoulli Filter," IEEE Trans. Signal Processing, Vol. 65, No. 8, pp. 1975-1987, 2017.
@@ -89,7 +89,7 @@ for k=1:meas.K
     glmb_update= cap(glmb_update,filter);                       H_cap= length(glmb_update.w);
     
     %state estimation and display diagnostics
-    est= extract_estimates_recursive(glmb_update,model,meas,est); 
+    est= extract_estimates_recursive(glmb_update,model,meas,est,k); 
     % [est.X{k},est.N(k),est.L{k}]= extract_estimates(glmb_update,model);
     display_diaginfo(glmb_update,k,est,filter,H_posterior,H_posterior,H_prune,H_cap);
     
@@ -129,7 +129,7 @@ end
 %create surviving tracks - via time prediction (single target CK)
 tt_survive= cell(length(glmb_update.tt),1);                                                                                 %initialize cell array
 for tabsidx=1:length(glmb_update.tt)
-    [mtemp_predict,Ptemp_predict]= ekf_predict_multiple(model,glmb_update.tt{tabsidx}.m,glmb_update.tt{tabsidx}.P);      %kalman prediction for GM
+    [mtemp_predict,Ptemp_predict]= ekf_predict_multiple(model,glmb_update.tt{tabsidx}.m,glmb_update.tt{tabsidx}.P,k);      %kalman prediction for GM
     tt_survive{tabsidx}.m= mtemp_predict;                                                                                   %means of Gaussians for surviving track
     tt_survive{tabsidx}.P= Ptemp_predict;                                                                                   %covs of Gaussians for surviving track
     tt_survive{tabsidx}.w= glmb_update.tt{tabsidx}.w;                                                                       %weights of Gaussians for surviving track
@@ -341,7 +341,7 @@ end
 
 
 
-function est=extract_estimates_recursive(glmb,model,meas,est)
+function est=extract_estimates_recursive(glmb,model,meas,est,time)
 %extract estimates via recursive estimator, where  
 %trajectories are extracted via association history, and
 %track continuity is guaranteed with a non-trivial estimator
@@ -386,7 +386,7 @@ for t=1:length(est.T)
     m= model.m_birth{bidx};
     P= model.P_birth{bidx};
     for u=1:length(tah)
-        [m,P] = ekf_predict_multiple(model,m,P);
+        [m,P] = ekf_predict_multiple(model,m,P,time);
         k= ks+u-1;
         emm= tah(u);
         if emm > 0

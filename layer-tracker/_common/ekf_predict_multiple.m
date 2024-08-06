@@ -1,4 +1,4 @@
-function [m_predict,P_predict] = ekf_predict_multiple(model,m,P)    
+function [m_predict,P_predict] = ekf_predict_multiple(model,m,P,k)    
 
 plength= size(m,2);
 
@@ -8,14 +8,14 @@ P_predict = zeros(size(P));
 noise_var = 'noiseless';
 
 for idxp=1:plength
-    [m_temp,P_temp] = ekf_predict_single(model,m(:,idxp),P(:,:,idxp),noise_var);
+    [m_temp,P_temp] = ekf_predict_single(model,m(:,idxp),P(:,:,idxp),noise_var,k);
     m_predict(:,idxp) = m_temp;
     P_predict(:,:,idxp) = P_temp;
 end
 
-function [m_predict,P_predict] = ekf_predict_single(model,m,P,noise_var)
+function [m_predict,P_predict] = ekf_predict_single(model,m,P,noise_var,k)
 
-m_predict = gen_newstate_fn(model,m,noise_var);
-[F_ekf,G_ekf]= ekf_predict_mat(model,m);                % user specified function for application
+m_predict = gen_newstate_fn(model,m,noise_var,k);
+[F_ekf,G_ekf]= ekf_predict_mat(model,m,k);                % user specified function for application
 P_predict= G_ekf*model.Q*G_ekf' + F_ekf*P*F_ekf';
 P_predict= (P_predict+P_predict')/2;                    % addition step to avoid numerical problem

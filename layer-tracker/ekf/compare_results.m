@@ -8,11 +8,11 @@ clear; close all; clc;
 
 % struct-06-14-24-14-21
 
-addpath("Structs\")
+addpath("Structs\low hypothesis\")
 
 addpath("Plotting\")
 
-files = dir('Structs\');
+files = dir('Structs\low hypothesis\');
 file_names = {files(~[files.isdir]).name};
 
 for k = 1:length(file_names)
@@ -57,7 +57,7 @@ for i = 1:length(sim)
     end
     else
         plot_results(model,meas,est,trimmed_data,[0;0;0],track_length_min);
-        plot_truth(truth);
+        % plot_truth(truth);
     end
 
     % legend(legend_list)
