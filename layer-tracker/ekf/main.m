@@ -81,18 +81,15 @@ anms_tuning_param = 40;
 
 for k = 1:length(ref_layers)+1
     if k == 1 
-        anms_val = ceil(anms_tuning_param * (abs(ref_layers{k}(2,2) - trim_vals(1)) / trim_vals(2)));
-        [new_detections{k},new_detections_suppressnt{k}] = anms_detection(data,trim_vals(1) * ones(2,length(ref_layers{k})),ref_layers{k},5);
+        [new_detections{k},new_detections_suppressnt{k}] = anms_detection(data,trim_vals(1) * ones(2,length(ref_layers{k})),ref_layers{k});
         second_pass_models{k} = gen_model([trim_vals(1) ref_layers{k}(2,2)],new_detections_suppressnt{k},0,ref_layers{k}(2,:));
 
     elseif k == length(ref_layers)+1
-        anms_val = ceil(anms_tuning_param * (abs(ref_layers{k-1}(2,2) - trim_vals(2)) / trim_vals(2)));
-        [new_detections{k},new_detections_suppressnt{k}] = anms_detection(data,ref_layers{k-1},trim_vals(2) * ones(2,length(ref_layers{k-1})),15);
+        [new_detections{k},new_detections_suppressnt{k}] = anms_detection(data,ref_layers{k-1},trim_vals(2) * ones(2,length(ref_layers{k-1})));
         second_pass_models{k} = gen_model([ref_layers{k-1}(2,2) trim_vals(2)],new_detections_suppressnt{k},0,ref_layers{k-1}(2,:));
 
     else
-        anms_val = ceil(anms_tuning_param * (abs(ref_layers{k}(2,2) - ref_layers{k-1}(2,2)) / trim_vals(2)));
-        [new_detections{k},new_detections_suppressnt{k}] = anms_detection(data,ref_layers{k-1},ref_layers{k},5);
+        [new_detections{k},new_detections_suppressnt{k}] = anms_detection(data,ref_layers{k-1},ref_layers{k});
         second_pass_models{k} = gen_model([ref_layers{k-1}(2,2) ref_layers{k}(2,2)],new_detections_suppressnt{k},ref_layers{k}(2,:),ref_layers{k-1}(2,:));
 
     end
@@ -186,6 +183,28 @@ for kk = 1:length(ref_layers)+1
         plot(ref_layers{kk}(1,:),ref_layers{kk}(2,:),'k','LineWidth',1);
     end
 end
+
+%% Append layer informed tracks with first pass
+
+iter = length(output_tracks)+1;
+for k = 1:length(second_output_tracks)
+    for kk = 1:length(second_output_tracks{k})
+        if ~isempty(second_output_tracks{k}{kk})
+            output_tracks{iter} = second_output_tracks{k}{kk};
+            iter = iter + 1;
+        end
+    end
+end
+
+% Plot just to check logic
+figure; 
+imagesc(data); colormap(1 -gray); hold on
+for k = 1:length(output_tracks)
+    plot(output_tracks{k}(1,:),output_tracks{k}(2,:),'r')
+end
+title('All tracks, appended into a single structure')
+
+ylim(trim_vals)
 
 %% Saving Results
     

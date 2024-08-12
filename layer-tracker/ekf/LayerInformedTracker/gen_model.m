@@ -27,7 +27,7 @@ model.name = 'Layer Informed Tracker';
 model.range = range_limit;
 
 model.x_dim= 1;   %dimension of state vector 
-model.B = 0.35; % model.sigma_range * eye(model.v_dim);
+model.B = 0.27; % model.sigma_range * eye(model.v_dim);
 model.Q = model.B*model.B';
 model.B2 = [1];
 
@@ -96,11 +96,11 @@ end
 
 % observation model parameters (noisy range only)
 % measurement transformation given by gen_observation_fn, observation matrix is N/A in non-linear case
-model.D= diag([2.8]);                     %std for range noise
+model.D= diag([3]);                     %std for range noise
 model.R= model.D*model.D';              %covariance for observation noise
 
 % detection parameters
-model.P_D= 0.52;   %probability of detection in measurements
+model.P_D= 0.57;   %probability of detection in measurements
 model.Q_D= 1-model.P_D; %probability of missed detection in measurements
 
 model.P_G = 0.7;
