@@ -13,7 +13,7 @@ for k = 1:size(data,2)
     num_meas(k) = length(trim_bed_loc);
 
     if k == 1
-        anms_surpression_cutoff = ceil(0.5 * length(trim_bed_loc));
+        anms_surpression_cutoff = ceil(0.512* length(trim_bed_loc));
     end
 
 end
