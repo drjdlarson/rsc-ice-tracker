@@ -2,9 +2,9 @@ function handles= plot_result_recursive(model,meas,est,trimmed_data,cur_time)
 %plot x tracks and measurements in x/y
 figure(1); tracking= gcf; set(tracking,'position',[0,0,1272,777])
 
-if model.subplot == 1
-    subplot(1,model.max_num,model.num)
-end
+% if model.subplot == 1
+%     subplot(1,model.max_num,model.num)
+% end
 
 labelcount= countestlabels();
 colorarray= makecolorarray(labelcount);

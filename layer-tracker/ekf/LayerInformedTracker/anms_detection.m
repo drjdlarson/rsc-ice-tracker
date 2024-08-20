@@ -13,10 +13,12 @@ for k = 1:size(data,2)
     num_meas(k) = length(trim_bed_loc);
 
     if k == 1
-        anms_surpression_cutoff = ceil(0.512* length(trim_bed_loc));
+        anms_surpression_cutoff = ceil(0.512 * length(trim_bed_loc));
     end
 
 end
+
+% anms_surpression_cutoff = ceil(0.5 * mean(num_meas));
 
 fprintf('The average number of measurements for current region: %3.2f \n', mean(num_meas))
 fprintf('The ANMS Value for current region: %3.2f \n', anms_surpression_cutoff)

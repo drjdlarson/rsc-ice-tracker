@@ -100,7 +100,7 @@ model.D= diag([2.7]);                     %std for range noise
 model.R= model.D*model.D';              %covariance for observation noise
 
 % detection parameters
-model.P_D= 0.5;   %probability of detection in measurements
+model.P_D= 0.55;   %probability of detection in measurements
 model.Q_D= 1-model.P_D; %probability of missed detection in measurements
 
 model.P_G = 0.7;
