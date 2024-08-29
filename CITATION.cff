@@ -8,7 +8,7 @@ authors:
   given-names: "Dawson B."
 - family-names: "Luong"
   given-names: "Tuan D."
-title: "GLMB Utility for Ice Layer Tracking"
+title: "GUILT: GLMB Utility for Ice Layer Tracking"
 version: 0.0.1
 doi: 10.5281/zenodo.13500099
 date-released: 2024-08-29
@@ -24,6 +24,6 @@ preferred-citation:
   - family-names: "Luong"
     given-names: "Tuan D."
   doi: "10.5281/zenodo.13500099"
-  title: "GLMB Utility for Ice Layer Tracking"
+  title: "GUILT: GLMB Utility for Ice Layer Tracking"
   version: 0.0.1
   year: 2024
