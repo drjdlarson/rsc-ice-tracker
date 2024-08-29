@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Larson"
+  given-names: "Jordan Douglas"
+  orcid: "https://orcid.org/0000-0002-5102-1763"
+- family-names: "Pierce"
+  given-names: "Dawson B."
+- family-names: "Luong"
+  given-names: "Tuan D."
+title: "GLMB Utility for Ice Layer Tracking"
+version: 0.0.1
+doi: 10.5281/zenodo.13500099
+date-released: 2024-08-29
+url: "https://github.com/drjdlarson/guilt"
+preferred-citation:
+  type: software
+  authors:
+  - family-names: "Larson"
+    given-names: "Jordan Douglas"
+    orcid: "https://orcid.org/0000-0002-5102-1763"
+  - family-names: "Larson"
+    given-names: "Jordan Douglas"
+  - family-names: "Larson"
+    given-names: "Jordan Douglas"
+  doi: "10.5281/zenodo.13500099"
+  title: "GLMB Utility for Ice Layer Tracking"
+  version: 0.0.1
+  year: 2024
