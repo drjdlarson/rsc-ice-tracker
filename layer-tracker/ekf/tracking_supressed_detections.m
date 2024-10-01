@@ -1,4 +1,10 @@
-function [model,est,meas] = tracking_supressed_detections(detection,trim_val,model_name, trimmed_data,non_surpressed_detections)
+function [model,est,meas] = tracking_supressed_detections(detection,trim_val,model_name, trimmed_data, varagin)
+
+subplot_params = 0;
+
+if nargin == 5
+    subplot_params = varagin;
+end
 
 layer_detection = detection;
 
@@ -17,7 +23,11 @@ meas.K = size(meas_cell,2);
 meas.Z = meas_cell;
 meas.meas_map = meas_map;
 
-model= gen_model(model_name,trim_val,non_surpressed_detections);
+if subplot_params == 0
+    model= gen_model(model_name,trim_val);
+else
+    model= gen_model(model_name,trim_val,subplot_params);
+end
 
 est=   run_filter(model,meas, trimmed_data);
 

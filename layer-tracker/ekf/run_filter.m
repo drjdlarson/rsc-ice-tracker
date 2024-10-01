@@ -129,7 +129,7 @@ end
 %create surviving tracks - via time prediction (single target CK)
 tt_survive= cell(length(glmb_update.tt),1);                                                                                 %initialize cell array
 for tabsidx=1:length(glmb_update.tt)
-    [mtemp_predict,Ptemp_predict]= ekf_predict_multiple(model,glmb_update.tt{tabsidx}.m,glmb_update.tt{tabsidx}.P,k);      %kalman prediction for GM
+    [mtemp_predict,Ptemp_predict]= ekf_predict_multiple(model,glmb_update.tt{tabsidx}.m,glmb_update.tt{tabsidx}.P);      %kalman prediction for GM
     tt_survive{tabsidx}.m= mtemp_predict;                                                                                   %means of Gaussians for surviving track
     tt_survive{tabsidx}.P= Ptemp_predict;                                                                                   %covs of Gaussians for surviving track
     tt_survive{tabsidx}.w= glmb_update.tt{tabsidx}.w;                                                                       %weights of Gaussians for surviving track
@@ -386,7 +386,7 @@ for t=1:length(est.T)
     m= model.m_birth{bidx};
     P= model.P_birth{bidx};
     for u=1:length(tah)
-        [m,P] = ekf_predict_multiple(model,m,P,time);
+        [m,P] = ekf_predict_multiple(model,m,P);
         k= ks+u-1;
         emm= tah(u);
         if emm > 0

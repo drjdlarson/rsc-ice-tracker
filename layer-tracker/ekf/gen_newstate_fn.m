@@ -1,4 +1,6 @@
-function X= gen_newstate_fn(model,Xd,V,k)
+function X= gen_newstate_fn(model,Xd,V)
+
+%nonlinear state space equation (CT model)
 
 if ~isnumeric(V)
     if strcmp(V,'noise')

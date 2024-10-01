@@ -1,6 +1,10 @@
 function output_tracks = plot_results(model,meas,est,trimmed_data,colorVar,track_length_min)
 %plot x tracks and measurements in x/y
 
+if model.subplot == 1
+    subplot(1,model.max_num,model.num)
+end
+
 title(model.name)
 
 labelcount= countestlabels();
@@ -24,12 +28,12 @@ tracking= gcf; hold on;
 imagesc(trimmed_data)
 colormap(1-gray)
 hold on
-
-% for k=1:size(meas.Z,2)
-%     if ~isempty(meas.Z{k})
-%         hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','.','Markersize',1.8,'Color','r');
-%     end   
-% end
+for k=1:size(meas.Z,2)
+    if ~isempty(meas.Z{k})
+        hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','.','Markersize',1.8,'Color','r');
+    end   
+end
+%hlined= line(meas.meas_map(cur_time)*ones(size(meas.Z{cur_time},2),1),meas.Z{cur_time}(1,:),'LineStyle','none','Marker','o','Markersize',1,'Color','black');
 
 k = 1;
 

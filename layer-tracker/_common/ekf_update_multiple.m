@@ -19,7 +19,7 @@ function [qz_temp,m_temp,P_temp] = ekf_update_single(z,model,m,P)
 eta = gen_observation_fn(model,m,'noiseless');
 
 [H_ekf,U_ekf]= ekf_update_mat(model,m);                 % user specified function for application
-S= U_ekf*model.R*U_ekf'+H_ekf*P*H_ekf'; S= (S + S')/2;   % addition step to avoid numerical problem
+S= U_ekf*model.R*U_ekf'+H_ekf*P*H_ekf'; S= (S+ S')/2;   % addition step to avoid numerical problem
 Vs= chol(S); det_S= prod(diag(Vs))^2; inv_sqrt_S= inv(Vs); iS= inv_sqrt_S*inv_sqrt_S';
 
 K  = P*H_ekf'*iS;

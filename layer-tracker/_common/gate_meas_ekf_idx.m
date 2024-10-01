@@ -9,7 +9,7 @@ for j=1:plength
         Sj= U_ekf*model.R*U_ekf' + C_ekf*P(:,:,j)*C_ekf'; Sj= (Sj+ Sj')/2; 
         Vs= chol(Sj); det_Sj= prod(diag(Vs))^2; inv_sqrt_Sj= inv(Vs);
         iSj= inv_sqrt_Sj*inv_sqrt_Sj'; 
-        nu= z - repmat(gen_observation_fn(model,m(:,j),zeros(size(model.D,2),1)),[1 zlength]);
+        nu= z- repmat(gen_observation_fn(model,m(:,j),zeros(size(model.D,2),1)),[1 zlength]);
         dist= sqrt((inv_sqrt_Sj'*nu).^2);
         valid_idx= unique_faster([ valid_idx find( dist < gamma )]);
 end

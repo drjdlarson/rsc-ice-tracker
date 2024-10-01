@@ -1,5 +1,10 @@
-function output_tracks = plot_results_together(model,meas,est,track_length_min)
+function handles= plot_result_recursive(model,meas,est,trimmed_data,cur_time)
 %plot x tracks and measurements in x/y
+figure(1); tracking= gcf; set(tracking,'position',[0,0,1272,777])
+
+if model.subplot == 1
+    subplot(1,model.max_num,model.num)
+end
 
 labelcount= countestlabels();
 colorarray= makecolorarray(labelcount);
@@ -10,46 +15,51 @@ for k=1:meas.K
         est.track_list{k} = [est.track_list{k} assigncolor(est.L{k}(:,eidx))];
     end
 end
+if est.total_tracks == 0
+    handles = [tracking];
+    return
+end
 [Y_track,l_birth,l_death]= extract_tracks(est.X,est.track_list,est.total_tracks);
 
 
 %plot x tracks and measurements in x/y
-tracking= gcf; hold on;
+%figure(1); tracking= gcf; hold on;
 
 %plot x measurement
 %subplot(211); box on; 
-% for k=1:cur_time-1
-%     if ~isempty(meas.Z{k})
-%         hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','.','Markersize',1,'Color','green');
-%     end   
-% end
-%hlined= line(meas.meas_map(cur_time)*ones(size(meas.Z{cur_time},2),1),meas.Z{cur_time}(1,:),'LineStyle','none','Marker','o','Markersize',1,'Color','black');
-
-k = 1;
-
-output_tracks = cell(1);
+imagesc(trimmed_data)
+colormap(1-gray)
+hold on;
+for k=1:cur_time-1
+    if ~isempty(meas.Z{k})
+        hlined= line(meas.meas_map(k)*ones(size(meas.Z{k},2),1),meas.Z{k}(1,:),'LineStyle','none','Marker','.','Markersize',1,'Color','green');
+    end   
+end
+hlined= line(meas.meas_map(cur_time)*ones(size(meas.Z{cur_time},2),1),meas.Z{cur_time}(1,:),'LineStyle','none','Marker','o','Markersize',1,'Color','black');
 
 % %plot x estimate
 for t=1:size(Y_track,3)
     temp = Y_track(1,:,t);
     num_valid = sum(~isnan(temp));
-    if num_valid > track_length_min
+    if num_valid > 25
         %hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color',colorarray.rgb(t,:),'LineWidth',1);
-        hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color','r','LineWidth',1,'Marker','o','Markersize',1);
-        output_tracks{k} = [meas.meas_map; Y_track(1,:,t)];
-        k = k + 1;
+        hline2= line(meas.meas_map,Y_track(1,:,t),'LineStyle','-','Color','r','LineWidth',1);
     else
         continue
     end
 end
+
 set(gca, 'YDir','reverse')
-ylabel('Range (m)');
-% ylim([model.range(1)-5, model.range(2)+5]);
-% xlim([meas.meas_map(1) meas.meas_map(end)])
-% yline(model.range(1),'r')
-% yline(model.range(2),'r')
+ylabel('Range (Index)');
+ylim([model.range(1)-5, model.range(2)+5]);
+xlim([meas.meas_map(1) meas.meas_map(end)])
+yline(model.range(1),'r')
+yline(model.range(2),'r')
 drawnow
-%exportgraphics(tracking,'testAnimated.gif','Append',true);
+hold off
+title(model.name)
+fig_hand = gcf;
+exportgraphics(fig_hand,'testAnimated.gif','Append',true);
 handles=[ tracking ];
 
 function ca= makecolorarray(nlabels)
