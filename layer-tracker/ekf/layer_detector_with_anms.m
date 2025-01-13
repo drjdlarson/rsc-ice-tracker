@@ -43,8 +43,9 @@ end
 
 
 figure()
-imagesc(data)
-colormap (1-gray)
+
+
+
 hold on 
 plot (bed_data(1,:), bed_data(2,:),'r', LineWidth=1.5)
 %xline(ascope_idx,'g')
